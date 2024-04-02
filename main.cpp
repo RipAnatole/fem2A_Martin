@@ -51,13 +51,24 @@ void run_simu()
 }
 
 int main( int argc, const char * argv[] )
+/* 	argc = nombre d'arguments
+		ex : ./build/fem2a => argc = 0
+	argv = liste des arguments
+		argc[0] = le 1er argument
+ 		argc[1] = le 2e argument
+*/ 
 {
     /* Command line parsing */
+    /* Il boucle sur le nombre d'arguments. 
+    Il remplit arguments avec les arguments donnés */
+    std::cout << "coucou/n";
     for( int i = 1; i < argc; ++i ) {
         arguments.push_back( std::string(argv[i]) );
     }
 
     /* Show usage if asked or no arguments */
+    /* S'il n'y a pas d'arguments ou (||) on a utilisé l'argument -h,
+    il effectue runtest*/
     if( arguments.size() == 0 || flag_is_used("-h", arguments)
         || flag_is_used("--help", arguments) ) {
         std::cout << "Usage: ./fem2a [options]" << std::endl
@@ -69,13 +80,13 @@ int main( int argc, const char * argv[] )
         return 0;
     }
 
-    /* Run the tests if asked */
+    /* Run the tests if asked, cad -t */
     if( flag_is_used("-t", arguments)
         || flag_is_used("--run-tests", arguments) ) {
         run_tests();
     }
 
-    /* Run the simulation if asked */
+    /* Run the simulation if asked, cad -s */
     if( flag_is_used("-s", arguments)
         || flag_is_used("--run-simu", arguments) ) {
         run_simu();
