@@ -132,6 +132,11 @@ namespace FEM2A {
     ElementMapping::ElementMapping( const Mesh& M, bool border, int i )
         : border_( border )
     {
+        /* 
+        - border true : on est a un bord, donc un segment, donc 2 coordonnées, donc 2 vertices
+        - border false : c'est un triangle, donc 3 coordonnées, donc 3 vertices 
+        pour passer d'un indice en vecteur, il faut voir le COURS
+        */
         std::cout << "[ElementMapping] constructor for element " << i << " ";
         if ( border ) std::cout << "(border)";
         std::cout << '\n';
