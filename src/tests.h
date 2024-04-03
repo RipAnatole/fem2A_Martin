@@ -50,6 +50,43 @@ namespace FEM2A {
             mesh.save("data/geothermie_4.mesh");
             return true;
         }
+        
+        bool test_message_coucou()
+        {
+            std::cout << "\n\nCOUCOU\n\n";
+            return true;
+        }
+        
+        bool test_quad( int ordre, bool bord )
+        {
+            Quadrature my_quad; // il faut instancier avant d'appeler get_quadrature() 
+            my_quad = Quadrature::get_quadrature( ordre, bord );
+	    
+	    std::cout << "nombre de points : " << my_quad.nb_points() << std::endl;
+	    
+	    double sum = 0; //les doubles sont bcp plus précis que les float
+	    
+	    for ( int i = 0; i < my_quad.nb_points(); ++i )
+	    {
+	        /*
+	        std::cout << my_quad.point(i).x << " " << my_quad.point(i).y <<
+	            "\npoids : " << my_quad.weight(i) << std::endl;
+	        */ 
+	        sum += my_quad.weight(i);
+	    }
+	    
+	    std::cout << "somme des poids : " << sum << std::endl;
+	    
+            return true;
+        }
+        
+        
+        
+        bool test_solver()
+        {
+            std::cout << "le test de la solution est vide pour l'instant\n";
+            return true;
+        }
 
     }
 }

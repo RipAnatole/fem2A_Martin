@@ -7,6 +7,23 @@
 #include <string>
 #include <vector>
 
+/*
++ Tester la structure Quadrature
+- Implémenter et tester la classe ElementMapping
+- Implémenter et tester la classe ShapeFunctions
+- Implémenter et tester la fonction assemble_elementary_matrix()
+- Implémenter et tester la fonction local_to_global_matrix()
+- Implémenter et tester la fonction apply_dirichlet_boundary_conditions()
+- Effectuer une simulation qui résout le problème de Dirichlet pur
+- Implémenter et tester la fonction assemble_elementary_vector()
+- Implémenter et tester la fonction local_to_global_vector()
+- Effectuer une simulation qui résout le problème de Dirichlet avec terme source
+- Effectuer une simulation qui résout le problème du sinus bump
+- Implémenter et tester la fonction assemble_elementary_neumann_vector()
+- Effectuer une simulation qui résout le problème de Neumann
+- Effectuer des simulations sur des géométries plus complexes (mug et geothermie)
+- Implémenter la fonction solve_poisson_problem()
+*/
 
 namespace FEM2A {
 
@@ -56,6 +73,7 @@ namespace FEM2A {
      *          segment: [0,1]
      *          triangle: (0,0) (1,0) (0,1)
      */
+     
     class ElementMapping {
         public:
             /**

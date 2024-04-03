@@ -29,13 +29,26 @@ using namespace FEM2A;
 void run_tests()
 {
     std::cout << "\n\nCOUCOU\n\n";
-    const bool t_opennl = true;
-    const bool t_lmesh = true;
-    const bool t_io = true;
+    const bool t_opennl = false;
+    const bool t_lmesh = false;
+    const bool t_io = false;
+    const bool t_m_coucou = true;
+    const bool t_quadrature = true;
+    const bool t_solver = false;
+    
 
     if( t_opennl ) test_opennl();
     if( t_lmesh ) Tests::test_load_mesh();
     if( t_io ) Tests::test_load_save_mesh();
+    if( t_m_coucou ) Tests::test_message_coucou();
+    if( t_quadrature ){
+        Tests::test_quad(0, false);
+        Tests::test_quad(2, false);
+        Tests::test_quad(4, false);
+        Tests::test_quad(6, false);
+        }
+    if( t_solver ) Tests::test_solver();
+
 }
 
 void run_simu()
