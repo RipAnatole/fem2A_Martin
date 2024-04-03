@@ -28,6 +28,7 @@ using namespace FEM2A;
 
 void run_tests()
 {
+    std::cout << "\n\nCOUCOU\n\n";
     const bool t_opennl = true;
     const bool t_lmesh = true;
     const bool t_io = true;
@@ -61,7 +62,7 @@ int main( int argc, const char * argv[] )
     /* Command line parsing */
     /* Il boucle sur le nombre d'arguments. 
     Il remplit arguments avec les arguments donnés */
-    std::cout << "coucou/n";
+    
     for( int i = 1; i < argc; ++i ) {
         arguments.push_back( std::string(argv[i]) );
     }
