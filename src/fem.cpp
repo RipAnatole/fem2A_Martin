@@ -130,17 +130,26 @@ namespace FEM2A {
     /* Implementation of ElementMapping */
     /****************************************************************/
     ElementMapping::ElementMapping( const Mesh& M, bool border, int i )
-        : border_( border )
+        : border_( border ) //prend la valeur de border
     {
         /* 
         - border true : on est a un bord, donc un segment, donc 2 coordonnées, donc 2 vertices
         - border false : c'est un triangle, donc 3 coordonnées, donc 3 vertices 
         pour passer d'un indice en vecteur, il faut voir le COURS
         */
-        std::cout << "[ElementMapping] constructor for element " << i << " ";
-        if ( border ) std::cout << "(border)";
-        std::cout << '\n';
-        // TODO
+        // TODO, affecter les valeurs à vertice_, c'est un vecteur de vertex, de coordonnées x et y. si border = False : triangle, 3 vertexes = coordonnées des 3 vertices du système
+        std::cout << "[ElementMapping] constructor for element " << i << ", ";
+        if ( border ) {
+            std::cout << "border\n";
+            for (int n = 0; n < 2; ++n) vertices_.push_back(M.get_edge_vertex(i,n));
+            for (int n = 0; n < 2; ++n) std::cout << "x : " << vertices_[n].x << ", y : " << vertices_[n].y << std::endl; 
+        }
+        else {
+            std::cout << "triangle\n";
+            for (int n = 0; n < 3; ++n) vertices_.push_back(M.get_triangle_vertex(i, n));
+            for (int n = 0; n < 3; ++n) std::cout << "x : " << vertices_[n].x << ", y :" << vertices_[n].y << std::endl;
+        }
+        
     }
 
     vertex ElementMapping::transform( vertex x_r ) const
@@ -148,6 +157,26 @@ namespace FEM2A {
         std::cout << "[ElementMapping] transform reference to world space" << '\n';
         // TODO
         vertex r ;
+        r.x = 0; r.y = 0;
+        double phiZero; double phiUn; double phiDeux;
+        if (border_) {
+            phiZero = 1 - x_r.x; 
+            phiUn = x_r.x;
+            double phi[2] = {phiZero, phiUn};
+            for (int i = 0; i<2; ++i) {
+                r.x += phi[i]*vertices_[i].x;
+                r.y += phi[i]*vertices_[i].y;
+            } 
+        } else {
+            phiZero = 1 - x_r.x - x_r.y; 
+            phiUn = x_r.x;
+            phiDeux = x_r.y;
+            double phi[3] = {phiZero, phiUn, phiDeux};
+            for (int i = 0; i<3; ++i) {
+                r.x += phi[i]*vertices_[i].x;
+                r.y += phi[i]*vertices_[i].y;
+            } 
+        }
         return r ;
     }
 

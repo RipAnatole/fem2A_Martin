@@ -80,7 +80,19 @@ namespace FEM2A {
             return true;
         }
         
-        
+        bool test_ElementMapping()
+        {
+            std::cout << "test coordonnées matrice\n";
+            
+            Mesh mesh;
+            mesh.load("data/square.mesh");
+            
+            ElementMapping ElMapTr4(mesh, false, 4);
+            ElementMapping ElMapBd4(mesh, true, 4);
+            
+            std::cout << "c'est teste\n";
+            return true;
+        }
         
         bool test_solver()
         {

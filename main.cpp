@@ -34,8 +34,8 @@ void run_tests()
     const bool t_io = false;
     const bool t_m_coucou = true;
     const bool t_quadrature = true;
+    const bool t_ElementMapping = true;
     const bool t_solver = false;
-    
 
     if( t_opennl ) test_opennl();
     if( t_lmesh ) Tests::test_load_mesh();
@@ -47,6 +47,7 @@ void run_tests()
         Tests::test_quad(4, false);
         Tests::test_quad(6, false);
         }
+    if( t_ElementMapping ) Tests::test_ElementMapping();
     if( t_solver ) Tests::test_solver();
 
 }
