@@ -185,6 +185,23 @@ namespace FEM2A {
         std::cout << "[ElementMapping] compute jacobian matrix" << '\n';
         // TODO
         DenseMatrix J ;
+        if ( border_ ) {
+            J.set_size( 2, 1 );
+            double a = -vertices_[0].x + vertices_[1].x;
+            double b = -vertices_[0].y + vertices_[1].y;
+            J.set(0, 0, a);
+            J.set(1, 0, b);
+        } else {
+            J.set_size( 2, 2 );
+            double a = -vertices_[0].x + vertices_[1].x;
+            double b = -vertices_[0].x + vertices_[2].x;
+            double c = -vertices_[0].y + vertices_[1].y;
+            double d = -vertices_[0].y + vertices_[2].y;
+            J.set(0, 0, a);
+            J.set(0, 1, b);
+            J.set(1, 0, c);
+            J.set(1, 1, d);
+        }
         return J ;
     }
 
@@ -192,6 +209,35 @@ namespace FEM2A {
     {
         std::cout << "[ElementMapping] compute jacobian determinant" << '\n';
         // TODO
+        DenseMatrix J = jacobian_matrix(x_r);
+        
+        if ( border_ ) {
+            double JTJ = J.get(0, 0)*J.get(0, 0) + J.get(1, 0)*J.get(1, 0);
+            return std::sqrt(JTJ);
+        } else {
+            assert ( J.det_2x2() != 0 );
+            return J.det_2x2();
+            
+            /*
+            assert ( J.det_2x2() != 0 );
+            
+            double det = J.det_2x2()
+            
+            double a = J.get(0, 0)/det;
+            double b = J.get(0, 1)/det;
+            double c = J.get(1, 0)/det;
+            double d = J.get(1, 1)/det;
+            
+            J.set(0, 0, d);
+            J.set(0, 1, -b);
+            J.set(1, 0, -c);
+            J.set(1, 1, a);
+            
+            DenseMatrix Jf = invert_2x2()
+            */
+            
+        }
+        
         return 0. ;
     }
 
@@ -201,21 +247,69 @@ namespace FEM2A {
     ShapeFunctions::ShapeFunctions( int dim, int order )
         : dim_( dim ), order_( order )
     {
+        /**
+        * \brief Constructor of the ShapeFunctions
+        * \param dim 1 for reference segment, 2 for reference triangle
+        * \param order Should be 1 (linear functions only)
+        */
         std::cout << "[ShapeFunctions] constructor in dimension " << dim << '\n';
+        
         // TODO
+        assert (order_ <= 1, "Ce programme ne permet pas d'évaluer en 2D, l'ordre doit etre de 1") ;
     }
 
     int ShapeFunctions::nb_functions() const
     {
         std::cout << "[ShapeFunctions] number of functions" << '\n';
         // TODO
-        return 0 ;
+        
+        if ( dim_ == 2 ) return 3 ;
+        return 2;
     }
 
     double ShapeFunctions::evaluate( int i, vertex x_r ) const
     {
         std::cout << "[ShapeFunctions] evaluate shape function " << i << '\n';
         // TODO
+        
+        if ( dim_ == 1 ) {
+            double xi = x_r.x;
+            switch(i) {
+                case(0) : return 1-xi;
+                case(1) : return xi;
+            }
+        } else {
+            double xi = x_r.x; double eta = x_r.y;
+            switch(i) {
+                case(0) : return 1-xi-eta;
+                case(1) : return xi;
+                case(2) : return eta;
+            }
+        }
+        
+        /*
+        vertex r ;
+        r.x = 0; r.y = 0;
+        double phiZero; double phiUn; double phiDeux;
+        if (dim_ == 1) {
+            phiZero = 1 - x_r.x; 
+            phiUn = x_r.x;
+            double phi[2] = {phiZero, phiUn};
+            for (int i = 0; i<2; ++i) {
+                r.x += phi[i]*vertices_[i].x;
+                r.y += phi[i]*vertices_[i].y;
+            } 
+        } else {
+            phiZero = 1 - x_r.x - x_r.y; 
+            phiUn = x_r.x;
+            phiDeux = x_r.y;
+            double phi[3] = {phiZero, phiUn, phiDeux};
+            for (int i = 0; i<3; ++i) {
+                r.x += phi[i]*vertices_[i].x;
+                r.y += phi[i]*vertices_[i].y;
+            } 
+        }
+        */
         return 0. ; // should not be reached
     }
 
@@ -224,6 +318,27 @@ namespace FEM2A {
         std::cout << "[ShapeFunctions] evaluate gradient shape function " << i << '\n';
         // TODO
         vec2 g ;
+            
+        assert ( J.det_2x2() != 0 );
+    
+        double det = J.det_2x2()
+        
+        DenseMatrix Jt = J.invert_2x2()
+        
+    
+        double a = J.get(0, 0)/det;
+        double b = J.get(0, 1)/det;
+        double c = J.get(1, 0)/det;
+        double d = J.get(1, 1)/det;
+    
+        J.set(0, 0, d);
+        J.set(0, 1, -b);
+        J.set(1, 0, -c);
+        J.set(1, 1, a);
+    
+        DenseMatrix Jf = invert_2x2()
+    
+        
         return g ;
     }
 

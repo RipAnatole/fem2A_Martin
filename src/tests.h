@@ -90,11 +90,15 @@ namespace FEM2A {
             ElementMapping ElMapTr4(mesh, false, 4);
             ElementMapping ElMapBd4(mesh, true, 4);
             
-            std::cout << "test transformation, soit du mapping du point (xi=0.2 , eta=0.4)\n";
+            std::cout << "\ntest transformation, soit du mapping du point (xi=0.2 , eta=0.4)\n";
             vertex x_r; x_r.x = 0.2; x_r.y = 0.4;
             vertex r = ElMapTr4.transform(x_r);
             std::cout << r.x << " " << r.y << std::endl;
             
+            std::cout << "\ntest Matrice Jacobienne du point (xi=0.2 , eta=0.4)\n";
+            DenseMatrix J = ElMapTr4.jacobian_matrix(x_r);
+            J.print();
+            std::cout << "determinant :" << J.det_2x2() << std::endl;
             return true;
         }
         
