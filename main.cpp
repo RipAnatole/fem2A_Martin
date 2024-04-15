@@ -32,8 +32,8 @@ void run_tests()
     const bool t_opennl = false;
     const bool t_lmesh = false;
     const bool t_io = false;
-    const bool t_m_coucou = true;
-    const bool t_quadrature = true;
+    const bool t_m_coucou = false;
+    const bool t_quadrature = false;
     const bool t_ElementMapping = true;
     const bool t_solver = false;
 

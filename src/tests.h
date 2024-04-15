@@ -90,7 +90,11 @@ namespace FEM2A {
             ElementMapping ElMapTr4(mesh, false, 4);
             ElementMapping ElMapBd4(mesh, true, 4);
             
-            std::cout << "c'est teste\n";
+            std::cout << "test transformation, soit du mapping du point (xi=0.2 , eta=0.4)\n";
+            vertex x_r; x_r.x = 0.2; x_r.y = 0.4;
+            vertex r = ElMapTr4.transform(x_r);
+            std::cout << r.x << " " << r.y << std::endl;
+            
             return true;
         }
         
