@@ -434,6 +434,16 @@ namespace FEM2A {
     {
         std::cout << "Ke -> K" << '\n';
         // TODO
+        //La matrice Ke doit deja etre cree
+        // t est l'index de l'element
+        for (int i = 0; i < Ke.height(); ++i) {
+            for (int j = 0; j < Ke.width(); ++j) {
+                int gi = M.get_triangle_vertex_index(t, i);
+                int gj = M.get_triangle_vertex_index(t, j);
+                K.add(gi, gj, Ke.get(i, j));
+            }
+        }
+         
     }
 
     void assemble_elementary_vector(
@@ -445,6 +455,7 @@ namespace FEM2A {
     {
         std::cout << "compute elementary vector (source term)" << '\n';
         // TODO
+        
         
     }
 

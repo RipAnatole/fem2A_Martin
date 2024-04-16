@@ -130,8 +130,9 @@ namespace FEM2A {
             
             //test assemblage global K
             std::cout << "\ntest assemblage global K\n";
-            
-            
+            SparseMatrix K(mesh.nb_vertices()); //mettre autre valeur plus sure
+            local_to_global_matrix(mesh, 4, Ke, K );
+            K.print();
             return true;
         }
         
