@@ -101,6 +101,14 @@ namespace FEM2A {
             std::cout << "determinant :" << J.det_2x2() << std::endl;
             return true;
         }
+
+        bool test_ShapeFunction()
+        {
+            std::cout << "test ShapeFunction\n";
+            ShapeFunctions sf(1, 1);
+            std::cout << "c'est teste\n";
+            return true;
+        }
         
         bool test_solver()
         {

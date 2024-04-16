@@ -218,24 +218,6 @@ namespace FEM2A {
             assert ( J.det_2x2() != 0 );
             return J.det_2x2();
             
-            /*
-            assert ( J.det_2x2() != 0 );
-            
-            double det = J.det_2x2()
-            
-            double a = J.get(0, 0)/det;
-            double b = J.get(0, 1)/det;
-            double c = J.get(1, 0)/det;
-            double d = J.get(1, 1)/det;
-            
-            J.set(0, 0, d);
-            J.set(0, 1, -b);
-            J.set(1, 0, -c);
-            J.set(1, 1, a);
-            
-            DenseMatrix Jf = invert_2x2()
-            */
-            
         }
         
         return 0. ;
@@ -255,7 +237,7 @@ namespace FEM2A {
         std::cout << "[ShapeFunctions] constructor in dimension " << dim << '\n';
         
         // TODO
-        assert (order_ <= 1, "Ce programme ne permet pas d'évaluer en 2D, l'ordre doit etre de 1") ;
+        assert (order_ <= 1) ;
     }
 
     int ShapeFunctions::nb_functions() const
@@ -318,7 +300,38 @@ namespace FEM2A {
         std::cout << "[ShapeFunctions] evaluate gradient shape function " << i << '\n';
         // TODO
         vec2 g ;
-            
+        
+        // border
+        if(dim_==1){
+            if(i ==1){
+                g.x = -1;
+                g.y = 0;
+                }
+            else{
+                g.x = 1;
+                g.y = 0;
+                }
+        }
+        
+        
+        // Pour un triangle
+        else{
+            switch (i){
+            case 0:
+                g.x = -1;
+                g.y = -1;
+                break;
+            case 1:
+                g.x = 1;
+                g.y = 0;
+                break;
+            case 2:
+                g.x = 0;
+                g.y = 1;
+            }
+        }
+        
+        /*
         assert ( J.det_2x2() != 0 );
     
         double det = J.det_2x2()
@@ -337,7 +350,7 @@ namespace FEM2A {
         J.set(1, 1, a);
     
         DenseMatrix Jf = invert_2x2()
-    
+        */
         
         return g ;
     }
@@ -352,8 +365,23 @@ namespace FEM2A {
         double (*coefficient)(vertex),
         DenseMatrix& Ke )
     {
-        std::cout << "compute elementary matrix" << '\n';
-        // TODO
+    
+    std::cout << "compute elementary matrix" << '\n';
+    // TODO
+    //jacobian_matrix( vertex x_r )
+    
+    for (int i = 0; i < 3; ++i) { 
+        for (int j = 0; j < 3; ++j) {
+            
+            //Ke ne se fait que dans les triangles et pas sur les bords, pas besoin de faire un cas bords_
+            for (int q = 0; q < quadrature.nb_points(); ++q) {
+                std::vector< double > w = quadrature.weight(q);
+                vertex point = quadrature.point(q);
+                ksi = point.x; eta = point.y;
+                DenseMatrix J = elt_mapping.jacobian_matrix( vertex x_r )
+            }
+        }
+    }
     }
 
     void local_to_global_matrix(
@@ -375,6 +403,7 @@ namespace FEM2A {
     {
         std::cout << "compute elementary vector (source term)" << '\n';
         // TODO
+        
     }
 
     void assemble_elementary_neumann_vector(
