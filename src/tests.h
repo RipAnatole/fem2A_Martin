@@ -3,6 +3,7 @@
 #include "mesh.h"
 #include "fem.h"
 #include "solver.h"
+#include "simu.h"
 
 #include <assert.h>
 #include <iostream>
@@ -48,12 +49,6 @@ namespace FEM2A {
             Mesh mesh;
             mesh.load("data/geothermie_4.mesh");
             mesh.save("data/geothermie_4.mesh");
-            return true;
-        }
-        
-        bool test_message_coucou()
-        {
-            std::cout << "\n\nCOUCOU\n\n";
             return true;
         }
         
@@ -107,6 +102,36 @@ namespace FEM2A {
             std::cout << "test ShapeFunction\n";
             ShapeFunctions sf(1, 1);
             std::cout << "c'est teste\n";
+            return true;
+        }
+        
+        bool test_assemble_elementary_matrix()
+        {
+            std::cout << "\ntest assemblage elementaire Ke\n";
+            Mesh mesh;
+            mesh.load("data/square.mesh");
+            ElementMapping my_el_map(mesh, false, 4);
+            ShapeFunctions my_shape(2, 1);
+        
+            Quadrature quadrature0;
+            quadrature0 = quadrature0.get_quadrature(0); //normalement, dans notre cas, on a le meme resultat pour une quadrature d'ordre 0 ou 2 car nos fonctions sont d'ordre 0
+            std::cout << "test avec ordre de quadrature 0\n";
+            DenseMatrix Ke;
+            
+            assemble_elementary_matrix( my_el_map, my_shape, quadrature0, FEM2A::Simu::unit_fct, Ke );
+            Ke.print();
+            
+            Quadrature quadrature2;
+            quadrature2 = quadrature2.get_quadrature(2);
+            assemble_elementary_matrix( my_el_map, my_shape, quadrature2, FEM2A::Simu::unit_fct, Ke );
+            
+            std::cout << "test avec ordre de quadrature 2\n";
+            Ke.print();
+            
+            //test assemblage global K
+            std::cout << "\ntest assemblage global K\n";
+            
+            
             return true;
         }
         

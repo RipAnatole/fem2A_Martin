@@ -138,14 +138,11 @@ namespace FEM2A {
         pour passer d'un indice en vecteur, il faut voir le COURS
         */
         // TODO, affecter les valeurs à vertice_, c'est un vecteur de vertex, de coordonnées x et y. si border = False : triangle, 3 vertexes = coordonnées des 3 vertices du système
-        std::cout << "[ElementMapping] constructor for element " << i << ", ";
-        if ( border ) {
-            std::cout << "border\n";
+        if ( border ) { //border
             for (int n = 0; n < 2; ++n) vertices_.push_back(M.get_edge_vertex(i,n));
             for (int n = 0; n < 2; ++n) std::cout << "x : " << vertices_[n].x << ", y : " << vertices_[n].y << std::endl; 
         }
-        else {
-            std::cout << "triangle\n";
+        else { //triangle
             for (int n = 0; n < 3; ++n) vertices_.push_back(M.get_triangle_vertex(i, n));
             for (int n = 0; n < 3; ++n) std::cout << "x : " << vertices_[n].x << ", y :" << vertices_[n].y << std::endl;
         }
@@ -154,7 +151,6 @@ namespace FEM2A {
 
     vertex ElementMapping::transform( vertex x_r ) const
     {
-        std::cout << "[ElementMapping] transform reference to world space" << '\n';
         // TODO
         vertex r ;
         r.x = 0; r.y = 0;
@@ -182,7 +178,6 @@ namespace FEM2A {
 
     DenseMatrix ElementMapping::jacobian_matrix( vertex x_r ) const
     {
-        std::cout << "[ElementMapping] compute jacobian matrix" << '\n';
         // TODO
         DenseMatrix J ;
         if ( border_ ) {
@@ -234,7 +229,6 @@ namespace FEM2A {
         * \param dim 1 for reference segment, 2 for reference triangle
         * \param order Should be 1 (linear functions only)
         */
-        std::cout << "[ShapeFunctions] constructor in dimension " << dim << '\n';
         
         // TODO
         assert (order_ <= 1) ;
@@ -242,7 +236,6 @@ namespace FEM2A {
 
     int ShapeFunctions::nb_functions() const
     {
-        std::cout << "[ShapeFunctions] number of functions" << '\n';
         // TODO
         
         if ( dim_ == 2 ) return 3 ;
@@ -251,7 +244,6 @@ namespace FEM2A {
 
     double ShapeFunctions::evaluate( int i, vertex x_r ) const
     {
-        std::cout << "[ShapeFunctions] evaluate shape function " << i << '\n';
         // TODO
         
         if ( dim_ == 1 ) {
@@ -297,10 +289,24 @@ namespace FEM2A {
 
     vec2 ShapeFunctions::evaluate_grad( int i, vertex x_r ) const
     {
-        std::cout << "[ShapeFunctions] evaluate gradient shape function " << i << '\n';
         // TODO
         vec2 g ;
         
+        if ( dim_ == 1 ) { //border
+            switch(i) {
+                case(0) : g.x = -1.; break;
+                case(1) : g.x = 1.; break; 
+            }
+            g.y = 0.;
+        } else { //triangle
+            switch(i) {
+                case(0) : g.x = -1.; g.y = -1.; break;
+                case(1) : g.x = 1.; g.y = 0.; break;
+                case(2) : g.x = 0.; g.y = 1.; break;
+            }
+        }
+        
+        /*
         // border
         if(dim_==1){
             if(i ==1){
@@ -311,11 +317,8 @@ namespace FEM2A {
                 g.x = 1;
                 g.y = 0;
                 }
-        }
-        
-        
-        // Pour un triangle
-        else{
+        }// Pour un triangle
+        else {
             switch (i){
             case 0:
                 g.x = -1;
@@ -330,7 +333,7 @@ namespace FEM2A {
                 g.y = 1;
             }
         }
-        
+        */
         /*
         assert ( J.det_2x2() != 0 );
     
@@ -365,24 +368,63 @@ namespace FEM2A {
         double (*coefficient)(vertex),
         DenseMatrix& Ke )
     {
+        // TODO
+        //jacobian_matrix( vertex x_r )
     
-    std::cout << "compute elementary matrix" << '\n';
-    // TODO
-    //jacobian_matrix( vertex x_r )
+        Ke.set_size(reference_functions.nb_functions(), reference_functions.nb_functions());
     
-    for (int i = 0; i < 3; ++i) { 
-        for (int j = 0; j < 3; ++j) {
-            
+        for (int i = 0; i < reference_functions.nb_functions() ; ++i) { 
+            for (int j = 0; j < reference_functions.nb_functions(); ++j) {
+                
             //Ke ne se fait que dans les triangles et pas sur les bords, pas besoin de faire un cas bords_
-            for (int q = 0; q < quadrature.nb_points(); ++q) {
-                std::vector< double > w = quadrature.weight(q);
-                vertex point = quadrature.point(q);
-                ksi = point.x; eta = point.y;
-                DenseMatrix J = elt_mapping.jacobian_matrix( vertex x_r )
+                double valeur = 0;
+
+                //On récupère la matrice jacobienne
+                
+                for (int q = 0; q < quadrature.nb_points(); ++q) {
+                
+                    double wq = quadrature.weight(q);
+                    
+                    double ksiq = quadrature.point(q).x; 
+                    double etaq = quadrature.point(q).y;
+                    //vertex point = quadrature.point(q);
+                    
+                    //On recupere l'element Me(ksiq, etaq)
+                    vertex Me = elt_mapping.transform(quadrature.point(q));
+                    double kq = coefficient(Me);
+                    
+                    //On recupere la jacobienne
+                    DenseMatrix J = elt_mapping.jacobian_matrix( quadrature.point(q) );
+                    
+                    //On recupere la transposee de l'inverse de la jacobienne
+                    DenseMatrix JinvT = J.invert_2x2().transpose();
+                    
+                    //On met la jacobienne en valeurs positives
+                    /*for (int height = 0; height < J.height(); ++height) {
+                        for (int width = 0; width < J.width(); ++width) {
+                            if (J.get(height, width) < 0) {
+                                J.set(height, width, -J.get(height, width));
+                            }
+                        }    
+                    }
+                    */
+                    double detJ = J.det_2x2();
+                
+                    //On recupere les gradiants de phi
+                    vec2 phi_grad_i = reference_functions.evaluate_grad( i, quadrature.point(q) );
+                    
+                    vec2 phi_grad_j = reference_functions.evaluate_grad( j, quadrature.point(q) );   
+
+                    //On complete l'expression de Ke(i, j)
+                    valeur += wq * kq * dot ( JinvT.mult_2x2_2( phi_grad_i ), JinvT.mult_2x2_2( phi_grad_j ) ) * detJ;   
+                    
+                }
+            Ke.set(i, j, valeur);             
             }
         }
     }
-    }
+
+
 
     void local_to_global_matrix(
         const Mesh& M,
