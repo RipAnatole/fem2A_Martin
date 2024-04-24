@@ -15,10 +15,10 @@
 namespace FEM2A {
     namespace Tests {
 
-        void affiche_vector(std::vector< double > int_vec) {
-            for_each(int_vec.begin(), int_vec.end(),
-                [](const int& n) { std::cout << n << "; "; });
-            std::cout << std::endl;
+        void affiche_vector(std::vector< double > vec) {
+            for(int i = 0; i < vec.size(); ++i) {
+                std::cout << vec[i] << std::endl;
+            }
         }
 
 
@@ -146,6 +146,7 @@ namespace FEM2A {
         bool test_apply_dirichlet_boundary_conditions() {
             Mesh mesh;
             mesh.load("data/square.mesh");
+            //Abandon de son test
             /*
             const std::vector< bool > attributes_Dirichlet; // size: nb of attributes 
             const std::vector< double > Dirichlet_values; // size: nb of DOFs
@@ -156,8 +157,6 @@ namespace FEM2A {
             */
             return true;
         }
-            
-        
         
         bool test_assemble_local_and_global_vector()
         {
@@ -168,6 +167,7 @@ namespace FEM2A {
             
             ElementMapping my_el_map(mesh, false, 4);
 
+            std::cout << "Fe du triangle 4\n";
             ShapeFunctions my_shape(2, 1);
             Quadrature quadrature;
             quadrature = quadrature.get_quadrature(0);
@@ -177,11 +177,28 @@ namespace FEM2A {
             affiche_vector(Fe);
             
             //pour un bord
-            std::cout << "pour un bord\n";
+            std::cout << "Fe du bord 4\n";
+            std::vector< double > Fe2;
+            ShapeFunctions my_shape2(1, 1);
+            Quadrature quadrature2;
+            quadrature2 = quadrature2.get_quadrature(0, true);
             ElementMapping my_el_map2(mesh, true, 4);
-            assemble_elementary_vector(my_el_map2, my_shape, quadrature, FEM2A::Simu::unit_fct, Fe);
-            affiche_vector(Fe);
-              
+            assemble_elementary_vector(my_el_map2, my_shape2, quadrature2, FEM2A::Simu::unit_fct, Fe2);
+            affiche_vector(Fe2);
+
+            //Fe -> F
+            std::cout <<"\n Fe -> F\n";
+            std::vector < double > F; 
+            
+            std::cout <<"pour le triangle : \n";
+            local_to_global_vector(mesh, false, 4, Fe, F); 
+            
+            std::cout << Fe.size() << std::endl;
+            std::cout <<"pour le bord : \n";
+            local_to_global_vector(mesh, true, 4, Fe2, F);
+            
+            affiche_vector(F);
+            
             return true;      
         }
         
@@ -191,6 +208,5 @@ namespace FEM2A {
             return true;
         }
 
-        
     }
 }

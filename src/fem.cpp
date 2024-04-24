@@ -140,11 +140,11 @@ namespace FEM2A {
         // TODO, affecter les valeurs à vertice_, c'est un vecteur de vertex, de coordonnées x et y. si border = False : triangle, 3 vertexes = coordonnées des 3 vertices du système
         if ( border ) { //border
             for (int n = 0; n < 2; ++n) vertices_.push_back(M.get_edge_vertex(i,n));
-            for (int n = 0; n < 2; ++n) std::cout << "x : " << vertices_[n].x << ", y : " << vertices_[n].y << std::endl; 
+            //for (int n = 0; n < 2; ++n) std::cout << "x : " << vertices_[n].x << ", y : " << vertices_[n].y << std::endl; 
         }
         else { //triangle
             for (int n = 0; n < 3; ++n) vertices_.push_back(M.get_triangle_vertex(i, n));
-            for (int n = 0; n < 3; ++n) std::cout << "x : " << vertices_[n].x << ", y :" << vertices_[n].y << std::endl;
+            //for (int n = 0; n < 3; ++n) std::cout << "x : " << vertices_[n].x << ", y :" << vertices_[n].y << std::endl;
         }
         
     }
@@ -202,7 +202,6 @@ namespace FEM2A {
 
     double ElementMapping::jacobian( vertex x_r ) const
     {
-        std::cout << "[ElementMapping] compute jacobian determinant" << '\n';
         // TODO
         DenseMatrix J = jacobian_matrix(x_r);
         
@@ -334,26 +333,6 @@ namespace FEM2A {
             }
         }
         */
-        /*
-        assert ( J.det_2x2() != 0 );
-    
-        double det = J.det_2x2()
-        
-        DenseMatrix Jt = J.invert_2x2()
-        
-    
-        double a = J.get(0, 0)/det;
-        double b = J.get(0, 1)/det;
-        double c = J.get(1, 0)/det;
-        double d = J.get(1, 1)/det;
-    
-        J.set(0, 0, d);
-        J.set(0, 1, -b);
-        J.set(1, 0, -c);
-        J.set(1, 1, a);
-    
-        DenseMatrix Jf = invert_2x2()
-        */
         
         return g ;
     }
@@ -452,9 +431,8 @@ namespace FEM2A {
         double (*source)(vertex),
         std::vector< double >& Fe )
     {
-        std::cout << "compute elementary vector (source term)" << '\n';
         // TODO
-        Fe.reserve(reference_functions.nb_functions());
+        Fe.resize(reference_functions.nb_functions());
     
         for (int i = 0; i < reference_functions.nb_functions() ; ++i) {
             
@@ -471,8 +449,7 @@ namespace FEM2A {
                 double fq = source(Me);
                     
                 //On recupere le determinant de la jacobienne
-                DenseMatrix J = elt_mapping.jacobian_matrix(point);
-                double detJ = J.det_2x2();
+                double detJ = elt_mapping.jacobian( point );
                 
                 //On recupere les gradiants de phi
                 double phi_i = reference_functions.evaluate( i, point );
@@ -504,8 +481,20 @@ namespace FEM2A {
         std::vector< double >& Fe,
         std::vector< double >& F )
     {
-        std::cout << "Fe -> F" << '\n';
         // TODO
+        // i est l'index de l'element
+        
+        for (int t = 0; t < Fe.size(); ++t) {
+            int gt = 0;
+            if (border) {
+                gt = M.get_edge_vertex_index(i, t);
+            } 
+            else {
+                gt = M.get_triangle_vertex_index(i, t);
+            }
+            F[gt] += Fe[t];
+            std::cout << "Le numéro global du point " << t << " est " << gt << std::endl;
+        }
     }
 
     void apply_dirichlet_boundary_conditions(

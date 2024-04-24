@@ -34,7 +34,7 @@ void run_tests()
     const bool t_quadrature = false;
     const bool t_ElementMapping = false;
     const bool t_test_assemble_elementary_matrix = false;
-    const bool t_test_assemble_vector_matrix = false; //a faire plus tard
+    const bool t_test_assemble_vector_matrix = true;
     const bool t_solver = false;
 
     if( t_opennl ) test_opennl();
