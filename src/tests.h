@@ -15,6 +15,13 @@
 namespace FEM2A {
     namespace Tests {
 
+        void affiche_vector(std::vector< double > int_vec) {
+            for_each(int_vec.begin(), int_vec.end(),
+                [](const int& n) { std::cout << n << "; "; });
+            std::cout << std::endl;
+        }
+
+
         bool test_load_mesh()
         {
             Mesh mesh;
@@ -136,11 +143,54 @@ namespace FEM2A {
             return true;
         }
         
+        bool test_apply_dirichlet_boundary_conditions() {
+            Mesh mesh;
+            mesh.load("data/square.mesh");
+            /*
+            const std::vector< bool > attributes_Dirichlet; // size: nb of attributes 
+            const std::vector< double > Dirichlet_values; // size: nb of DOFs
+            SparseMatrix K(mesh.nb_vertices());
+            std::vector< double >& F(mesh.nb_vertices(), 0.);
+            
+            apply_dirichlet_boundary_conditions(mesh, attributes_Dirichlet, Dirichlet_values, K, F );
+            */
+            return true;
+        }
+            
+        
+        
+        bool test_assemble_local_and_global_vector()
+        {
+            std::cout << "\ntest assemblage elementaire Fe\n";
+            
+            Mesh mesh;
+            mesh.load("data/square.mesh");
+            
+            ElementMapping my_el_map(mesh, false, 4);
+
+            ShapeFunctions my_shape(2, 1);
+            Quadrature quadrature;
+            quadrature = quadrature.get_quadrature(0);
+            std::vector< double > Fe;
+            
+            assemble_elementary_vector(my_el_map, my_shape, quadrature, FEM2A::Simu::unit_fct, Fe);
+            affiche_vector(Fe);
+            
+            //pour un bord
+            std::cout << "pour un bord\n";
+            ElementMapping my_el_map2(mesh, true, 4);
+            assemble_elementary_vector(my_el_map2, my_shape, quadrature, FEM2A::Simu::unit_fct, Fe);
+            affiche_vector(Fe);
+              
+            return true;      
+        }
+        
         bool test_solver()
         {
             std::cout << "le test de la solution est vide pour l'instant\n";
             return true;
         }
 
+        
     }
 }

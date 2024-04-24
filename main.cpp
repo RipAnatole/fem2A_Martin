@@ -33,7 +33,8 @@ void run_tests()
     const bool t_io = false;
     const bool t_quadrature = false;
     const bool t_ElementMapping = false;
-    const bool t_test_assemble_elementary_matrix = true;
+    const bool t_test_assemble_elementary_matrix = false;
+    const bool t_test_assemble_vector_matrix = false; //a faire plus tard
     const bool t_solver = false;
 
     if( t_opennl ) test_opennl();
@@ -47,6 +48,7 @@ void run_tests()
         }
     if( t_ElementMapping ) Tests::test_ElementMapping();
     if ( t_test_assemble_elementary_matrix ) Tests::test_assemble_elementary_matrix();
+    if ( t_test_assemble_vector_matrix ) Tests::test_assemble_local_and_global_vector();
     if( t_solver ) Tests::test_solver();
 
 }

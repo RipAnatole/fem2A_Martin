@@ -432,7 +432,6 @@ namespace FEM2A {
         const DenseMatrix& Ke,
         SparseMatrix& K )
     {
-        std::cout << "Ke -> K" << '\n';
         // TODO
         //La matrice Ke doit deja etre cree
         // t est l'index de l'element
@@ -455,7 +454,35 @@ namespace FEM2A {
     {
         std::cout << "compute elementary vector (source term)" << '\n';
         // TODO
-        
+        Fe.reserve(reference_functions.nb_functions());
+    
+        for (int i = 0; i < reference_functions.nb_functions() ; ++i) {
+            
+            double valeur = 0;
+                
+            for (int q = 0; q < quadrature.nb_points(); ++q) {
+            
+                double wq = quadrature.weight(q);
+                    
+                vertex point = quadrature.point(q);
+                    
+                //On recupere l'element Me(ksiq, etaq)
+                vertex Me = elt_mapping.transform(point);
+                double fq = source(Me);
+                    
+                //On recupere le determinant de la jacobienne
+                DenseMatrix J = elt_mapping.jacobian_matrix(point);
+                double detJ = J.det_2x2();
+                
+                //On recupere les gradiants de phi
+                double phi_i = reference_functions.evaluate( i, point );
+
+                //On complete l'expression de Fe(i)
+                valeur += wq * phi_i  * fq * detJ;   
+                    
+            }
+        Fe[i] = valeur;      
+        }
         
     }
 
@@ -483,13 +510,28 @@ namespace FEM2A {
 
     void apply_dirichlet_boundary_conditions(
         const Mesh& M,
-        const std::vector< bool >& attribute_is_dirichlet, /* size: nb of attributes */
+        const std::vector< bool >& attribute_is_dirichlet, /* size: nb of attributes */ //vecteur de booeans, taille est nb de vetceurs que peut prendre l'attribut
         const std::vector< double >& values, /* size: nb of DOFs */
         SparseMatrix& K,
         std::vector< double >& F )
     {
         std::cout << "apply dirichlet boundary conditions" << '\n';
         // TODO
+        std::vector< bool > processed_vertices(values.size(), false);
+        double penalty_coefficient = 10000.;
+        for( int edge = 0; edge < M.nb_edges(); edge++ ) {
+            int edge_attribute = M.get_edge_attribute(edge);
+            if( attribute_is_dirichlet[edge_attribute] ) {
+                for( int v = 0; v < 2; v++ ) {
+                    int vertex_index = M.get_edge_vertex_index( edge, v);
+                    if( !processed_vertices[vertex_index] ) {
+                        processed_vertices[vertex_index] = true;
+                        K.add(vertex_index, vertex_index, penalty_coefficient);
+                        F[vertex_index] += penalty_coefficient*values[vertex_index];
+                    }
+                }
+            }
+        }
     }
 
     void solve_poisson_problem(
