@@ -188,7 +188,7 @@ namespace FEM2A {
 
             //Fe -> F
             std::cout <<"\n Fe -> F\n";
-            std::vector < double > F; 
+            std::vector < double > F (mesh.nb_vertices()); 
             
             std::cout <<"pour le triangle : \n";
             local_to_global_vector(mesh, false, 4, Fe, F); 

@@ -492,8 +492,9 @@ namespace FEM2A {
             else {
                 gt = M.get_triangle_vertex_index(i, t);
             }
-            F[gt] += Fe[t];
+            
             std::cout << "Le numéro global du point " << t << " est " << gt << std::endl;
+            F[gt] += Fe[t];
         }
     }
 
