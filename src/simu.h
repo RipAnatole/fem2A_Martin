@@ -199,9 +199,8 @@ namespace FEM2A {
             }
             
             //On met les conditions de dirichlet dans notre maillage
-            std::vector< bool > att_is_dirichlet(2, false);
-            att_is_dirichlet[0] = true;
-            att_is_dirichlet[1] = true;
+            std::vector< bool > att_is_dirichlet(3, false); //truc qui cloche
+            att_is_dirichlet[2] = true;
             mesh.set_attribute(unit_fct, 1, true);
             
             std::vector< double > imposed_values(mesh.nb_vertices());
