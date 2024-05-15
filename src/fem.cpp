@@ -217,6 +217,10 @@ namespace FEM2A {
         return 0. ;
     }
 
+    bool ElementMapping::get_border() {
+        return border_;
+    }
+
     /****************************************************************/
     /* Implementation of ShapeFunctions */
     /****************************************************************/
@@ -492,15 +496,13 @@ namespace FEM2A {
             else {
                 gt = M.get_triangle_vertex_index(i, t);
             }
-            
-            std::cout << "Le numéro global du point " << t << " est " << gt << std::endl;
             F[gt] += Fe[t];
         }
     }
 
     void apply_dirichlet_boundary_conditions(
         const Mesh& M,
-        const std::vector< bool >& attribute_is_dirichlet, /* size: nb of attributes */ //vecteur de booeans, taille est nb de vetceurs que peut prendre l'attribut
+        const std::vector< bool >& attribute_is_dirichlet, /* size: nb of attributes */ //vecteur de booleans, taille est nb de vetceurs que peut prendre l'attribut
         const std::vector< double >& values, /* size: nb of DOFs */
         SparseMatrix& K,
         std::vector< double >& F )

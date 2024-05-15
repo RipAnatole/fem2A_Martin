@@ -108,6 +108,7 @@ namespace FEM2A {
              * \return the determinant of the jacobian matrix
              */
             double jacobian( vertex x_r ) const ;
+            bool get_border();
 
         private:
             bool border_ ;
