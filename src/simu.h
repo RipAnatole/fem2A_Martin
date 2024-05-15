@@ -133,6 +133,7 @@ namespace FEM2A {
             
             //On met les conditions de dirichlet dans notre maillage
             std::vector< bool > att_is_dirichlet(2, false);
+            att_is_dirichlet[0] = true;
             att_is_dirichlet[1] = true;
             mesh.set_attribute(unit_fct, 1, true);
             
@@ -177,7 +178,7 @@ namespace FEM2A {
                 quadrature = quadrature.get_quadrature(2);
                 DenseMatrix ke;
                 
-                assemble_elementary_matrix( my_el_map, my_shape, quadrature, FEM2A::Simu::unit_fct, ke ); //unit_fct car k est constant, k = 1, ce que renvoie unit_fct
+                assemble_elementary_matrix( my_el_map, my_shape, quadrature, unit_fct, ke ); //unit_fct car k est constant, k = 1, ce que renvoie unit_fct
                 
                 //On complete k_global
                 local_to_global_matrix( mesh, i, ke, k_global );
@@ -191,17 +192,16 @@ namespace FEM2A {
                 quadrature = quadrature.get_quadrature(2);
                 std::vector< double > f (mesh.nb_vertices());
                 
-                assemble_elementary_vector( my_el_map, my_shape, quadrature, FEM2A::Simu::sin_bump_fct, f ); //unit_fct car k est constant, k = 1, ce que renvoie unit_fct
+                assemble_elementary_vector( my_el_map, my_shape, quadrature, sin_bump_fct, f ); //unit_fct car k est constant, k = 1, ce que renvoie unit_fct
                 
                 //On complete F_global
                 local_to_global_vector( mesh, my_el_map.get_border(),i, f, F_global );
             }
             
             //On met les conditions de dirichlet dans notre maillage
-            std::vector< bool > att_is_dirichlet(3, false);
-            att_is_dirichlet[1] = true;
+            std::vector< bool > att_is_dirichlet(2, false);
             att_is_dirichlet[0] = true;
-            att_is_dirichlet[2] = true;
+            att_is_dirichlet[1] = true;
             mesh.set_attribute(unit_fct, 1, true);
             
             std::vector< double > imposed_values(mesh.nb_vertices());
